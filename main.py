@@ -1,5 +1,5 @@
 import telebot
-import config
+from bot import config
 from mongoengine import connect
 from models.cats_and_products import (Texts,
                                       Category,
@@ -148,6 +148,7 @@ def submit_cart(call):
 
 
 
+print("STARTED")
 bot.polling()
 
 
