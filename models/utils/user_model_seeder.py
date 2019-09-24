@@ -39,14 +39,17 @@ def seed_products_with_image():
     products = Product.objects.all()
 
     for i in products:
-        with open(r'E:\ITEA\ITEA\lesson_13\bot\images\test.png', 'rb') as image:
+        with open(r'images\test.png', 'rb') as image:
             i.image.put(image)
             i.save()
 
 
 if __name__ == '__main__':
-    connect('bot_shop')
+    db = connect('bot_shop')
+    db.drop_database('bot_shop')
+    db = connect('bot_shop')
     cats = seed_and_get_categories(5)
     seed_products(20, cats)
     Texts(title='Greetings', text='Hello text').save()
+    seed_products_with_image()
 
