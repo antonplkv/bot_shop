@@ -46,23 +46,7 @@ def seed_products_with_image():
 
 if __name__ == '__main__':
     connect('bot_shop')
-
-    seed_products_with_image()
-    # p = Product.objects.all().first()
-    # print(p.image.get())
-    # cats = seed_and_get_categories(6)
-    # products = seed_products(50, cats)
-    #
-    # text = dict(
-    #     title='Greetings',
-    #     text=random_string(2000)
-    # )
-    # Texts(**text).save()
-    # cats = seed_and_get_categories(10)
-    # seed_products(50, cats)
-    #CREATING SUB CATS
-    # cat_obj = Category.objects.all().first()
-    # cats = seed_and_get_categories(3)
-    # cat_obj.sub_categories = cats
-    # print(cat_obj.save())
+    cats = seed_and_get_categories(5)
+    seed_products(20, cats)
+    Texts(title='Greetings', text='Hello text').save()
 
