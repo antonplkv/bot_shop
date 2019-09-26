@@ -5,8 +5,12 @@ from models.cats_and_products import (Texts,
                                       Category,
                                       Cart,
                                       OrdersHistory)
+
+#sudo apt-get install openssl
+#openssl genrsa -out webhook_pkey.pem 2048
+#openssl req -new -x509 -days 3650 -key webhook_pkey.pem -out webhook_cert.pem
 import time
-from flask import Flask
+from flask import Flask, request, abort
 from bson import ObjectId
 from models.user_model import User
 from telebot.types import (
@@ -31,6 +35,17 @@ WEBHOOK_URL_PATH = "/%s/" % (API_TOKEN)
 
 bot = telebot.TeleBot(config.TOKEN)
 app = Flask(__name__)
+
+# Process webhook calls
+@app.route(WEBHOOK_URL_PATH, methods=['POST'])
+def webhook():
+    if  request.headers.get('content-type') == 'application/json':
+        json_string = request.get_data().decode('utf-8')
+        update = telebot.types.Update.de_json(json_string)
+        bot.process_new_updates([update])
+        return ''
+    else:
+        abort(403)
 
 @bot.message_handler(commands=['start'])
 def greetings(message):
