@@ -5,6 +5,8 @@ from models.cats_and_products import (Texts,
                                       Category,
                                       Cart,
                                       OrdersHistory)
+import time
+from flask import Flask
 from bson import ObjectId
 from models.user_model import User
 from telebot.types import (
@@ -15,7 +17,20 @@ from telebot.types import (
 )
 connect('bot_shop')
 
+API_TOKEN = config.TOKEN
+
+WEBHOOK_HOST = '34.67.34.201'
+WEBHOOK_PORT = 80  # 443, 80, 88 or 8443 (port need to be 'open')
+WEBHOOK_LISTEN = '0.0.0.0'  # In some VPS you may need to put here the IP addr
+
+WEBHOOK_SSL_CERT = './webhook_cert.pem'  # Path to the ssl certificate
+WEBHOOK_SSL_PRIV = './webhook_pkey.pem'  # Path to the ssl private key
+
+WEBHOOK_URL_BASE = "https://%s:%s" % (WEBHOOK_HOST, WEBHOOK_PORT)
+WEBHOOK_URL_PATH = "/%s/" % (API_TOKEN)
+
 bot = telebot.TeleBot(config.TOKEN)
+app = Flask(__name__)
 
 @bot.message_handler(commands=['start'])
 def greetings(message):
@@ -148,6 +163,18 @@ def submit_cart(call):
 
 
 
-bot.polling()
+bot.remove_webhook()
+
+time.sleep(0.1)
+
+# Set webhook
+bot.set_webhook(url=WEBHOOK_URL_BASE + WEBHOOK_URL_PATH,
+                certificate=open(WEBHOOK_SSL_CERT, 'r'))
+
+# Start flask server
+app.run(host=WEBHOOK_LISTEN,
+        port=WEBHOOK_PORT,
+        ssl_context=(WEBHOOK_SSL_CERT, WEBHOOK_SSL_PRIV),
+        debug=True)
 
 
